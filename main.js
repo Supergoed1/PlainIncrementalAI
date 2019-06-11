@@ -1,3 +1,4 @@
+//PlainIncremental Code IGNORE
 var game = {
     dataversion: 0.1,
     money: 0,
@@ -20,6 +21,7 @@ var market = {
     apples: 0
 }
 
+
 var dataversion = 0.1;
 
 var defaultGame = game;
@@ -28,74 +30,30 @@ var upgradeMenu = document.getElementById("upgradesMenu");
 var updateguiint = setInterval("updateGui()", 20);
 var upgradeint = setInterval("update()", 50);
 var everySec = setInterval(() => {
-    game.money += (getPrestigeBonus(game.moneyPerSec) / 100);
+    subject.game.money += (getPrestigeBonus(subject.game.moneyPerSec) / 100);
 }, 10);
-var marketInterval = setInterval(() => {
-    market.appleprice += getRandomInt(-1,1);
-    if(market.appleprice <= 0) {
-        market.appleprice = 1;
-    }
-}, 2000);
 
 function init() {
-    if(localStorage.getItem("game") == null) {
-        save();
-    }
-    if(localStorage.getItem("market") == null) {
-        save();
-    }
-    load();
-    if(game.dataversion == undefined || game.dataversion < dataversion) {
-        reset();
-    }
-    var date1 = new Date(game.lastLoginDate);
-    var date2 = new Date(Date.now());
-    console.log(date1);
-    console.log(date2);
-    var secondBetweenTwoDate = Math.abs((date2.getTime() - date1.getTime()) / 1000);
-    secondBetweenTwoDate = Math.round(secondBetweenTwoDate);
-    if(secondBetweenTwoDate >= game.maxOfflineTime * 3600) {
-        secondBetweenTwoDate = game.maxOfflineTime * 3600
-    }
-    alert("Away for " + secondBetweenTwoDate + "/" + game.maxOfflineTime * 3600 + " seconds" + "   You Earned: " + (game.moneyPerSec * secondBetweenTwoDate));
-    game.money += (game.moneyPerSec * secondBetweenTwoDate);
+    AiInit();
     console.log("Initialized");
 }
 
-function reset() {
-    game = defaultGame;
+function reset(subject) {
+    subject.game = defaultGame;
 }
-
-function save() {
-    localStorage.setItem("game", JSON.stringify(game));
-    localStorage.setItem("market", JSON.stringify(market));
-    console.log("Data saved");
-}
-
-function load() {
-    game = JSON.parse(localStorage.getItem("game"));
-    market = JSON.parse(localStorage.getItem("market"));
-    console.log("Data loaded");
-}
-
+/*
 function updateGui() {
-    document.getElementById("money").innerHTML = format(game.money);
-    document.getElementById("presCoins").innerHTML = "Prestige Coins: " + game.prestigeCoins;
-    document.getElementById("presBonus").innerHTML = "Prestige Bonus: " + game.prestigeCoins * game.bonusPerPresCoin + "%";
-    document.getElementById("clickButton").innerHTML = "+" + format(getPrestigeBonus(game.moneyPerClick));
-    document.getElementById("clickUpgrade").innerHTML = "+" + format(game.clickAmountPerUpgrade) + "/click <br> Cost: " + format(game.clickUpgradeCost);
-    document.getElementById("perSecUpgrade").innerHTML = "+" + format(game.perSecAmountPerUpgrade) + "/per sec <br> Cost: " + format(game.perSecUpgradeCost);
-    document.getElementById("offlineTimeUpgrade").innerHTML = "+0.5 hours offline time <br> Cost: " + format(game.offlineTimeCost);
+    document.getElementById("money").innerHTML = format(subject.subject.game.money);
+    document.getElementById("presCoins").innerHTML = "Prestige Coins: " + subject.subject.game.prestigeCoins;
+    document.getElementById("presBonus").innerHTML = "Prestige Bonus: " + subject.subject.game.prestigeCoins * subject.subject.game.bonusPerPresCoin + "%";
+    document.getElementById("clickButton").innerHTML = "+" + format(getPrestigeBonus(subject.subject.game.moneyPerClick));
+    document.getElementById("clickUpgrade").innerHTML = "+" + format(subject.subject.game.clickAmountPerUpgrade) + "/click <br> Cost: " + format(subject.subject.game.clickUpgradeCost);
+    document.getElementById("perSecUpgrade").innerHTML = "+" + format(subject.subject.game.perSecAmountPerUpgrade) + "/per sec <br> Cost: " + format(subject.subject.game.perSecUpgradeCost);
+    document.getElementById("offlineTimeUpgrade").innerHTML = "+0.5 hours offline time <br> Cost: " + format(subject.subject.game.offlineTimeCost);
     document.getElementById("aprice").innerHTML = "Apple Price: " + format(market.appleprice);
     document.getElementById("aamount").innerHTML = "Apples: " + market.apples;
 }
-
-function update() {
-    if(game.money == null || game.money == NaN) {
-        alert("Money glitched resetting to 1. Sorry for the inconvenience");
-        game.money = 1;
-    }
-}
+*/
 
 function toggleVisibility(element) {
     if(element.style.visibility == "hidden") {
@@ -105,100 +63,61 @@ function toggleVisibility(element) {
     }
 }
 
-function buyMarket(type) {
-    if(type == "apple") {
-        var amounttobuy = parseInt(document.getElementById("applebuyamount").value);
-        var cost = amounttobuy * market.appleprice;
-        if(game.money < cost) return;
-        game.money -= cost;
-        market.apples += amounttobuy;
-        console.log(market.apples);
-    }
+function getPrestigeBonus(num, subject) {
+    return (num * (1 +  (subject.game.prestigeCoins * subject.subject.game.bonusPerPresCoin / 100)));
 }
 
-function sellMarket(type) {
-    if(type == "apple") {
-        var amounttosell = parseInt(document.getElementById("applesellamount").value);
-        var appleearn = amounttosell * market.appleprice;
-        if(market.apples < amounttosell) return;
-        market.apples -= amounttosell;
-        game.money += appleearn;
-        console.log(market.apples);
-    }
+function onClick(subject) {
+    subject.game.money = subject.game.money * 1 + getPrestigeBonus(subject.game.moneyPerClick);
 }
 
-function getPrestigeBonus(num) {
-    return (num * (1 +  (game.prestigeCoins * game.bonusPerPresCoin / 100)));
-}
-
-function onClick() {
-    game.money = game.money * 1 + getPrestigeBonus(game.moneyPerClick);
-}
-
-function prestige() {
-    if(confirm("If you prestige now you will get " + Math.round(Math.round(game.money / 100)) + " prestige coins") == false) {
-        return;
-    }
+function prestige(subject) {
     document.getElementById("applesellamount").value = market.apples;
     for(var i = 0; i < market.apples; i++) {
         sellMarket("apple");
     }
     document.getElementById("applesellamount").value = 1;
-    game.prestigeCoins += Math.round(Math.round(game.money / 100));
-    game.money = 0;
-    game.moneyPerClick = 1;
-    game.moneyPerSec = 0;
-    game.clickAmountPerUpgrade = 1;
-    game.clickUpgradeAmountTillNextUpgrade = 0;
-    game.clickUpgradeCost = 10;
-    game.perSecAmountPerUpgrade = 1;
-    game.perSecUpgradeAmountTillNextUpgrade = 0;
-    game.perSecUpgradeCost = 25;
-    game.offlineTimeCost = 1000;
-    game.maxOfflineTime = 0.5;
+    subject.game.prestigeCoins += Math.round(Math.round(subject.game.money / 100));
+    subject.game.money = 0;
+    subject.game.moneyPerClick = 1;
+    subject.game.moneyPerSec = 0;
+    subject.game.clickAmountPerUpgrade = 1;
+    subject.game.clickUpgradeAmountTillNextUpgrade = 0;
+    subject.game.clickUpgradeCost = 10;
+    subject.game.perSecAmountPerUpgrade = 1;
+    subject.game.perSecUpgradeAmountTillNextUpgrade = 0;
+    subject.game.perSecUpgradeCost = 25;
+    subject.game.offlineTimeCost = 1000;
+    subject.game.maxOfflineTime = 0.5;
 }
 
 function format(number) {
     return number.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
-function buyUpgrade(upgrade) {
+function buyUpgrade(upgrade, subject) {
     if(upgrade == "click") {   
-        if(game.money >= game.clickUpgradeCost) {
-            game.moneyPerClick += game.clickAmountPerUpgrade;
-            game.money -= game.clickUpgradeCost;
-            game.clickUpgradeAmountTillNextUpgrade += 1;
-            if(game.clickUpgradeAmountTillNextUpgrade >= 5) {
-                game.clickAmountPerUpgrade *= 2;
-                game.clickUpgradeAmountTillNextUpgrade = 0;
+        if(subject.game.money >= subject.game.clickUpgradeCost) {
+            subject.game.moneyPerClick += subject.game.clickAmountPerUpgrade;
+            subject.game.money -= subject.game.clickUpgradeCost;
+            subject.game.clickUpgradeAmountTillNextUpgrade += 1;
+            if(subject.game.clickUpgradeAmountTillNextUpgrade >= 5) {
+                subject.game.clickAmountPerUpgrade *= 2;
+                subject.game.clickUpgradeAmountTillNextUpgrade = 0;
             }
-            game.clickUpgradeCost *= 1.50;
+            subject.game.clickUpgradeCost *= 1.50;
         }
     }
     if(upgrade == "perSec") {   
-        if(game.money >= game.perSecUpgradeCost) {
-            game.moneyPerSec += game.perSecAmountPerUpgrade;
-            game.money -= game.perSecUpgradeCost;
-            game.perSecUpgradeAmountTillNextUpgrade += 1;
-            if(game.perSecUpgradeAmountTillNextUpgrade >= 5) {
-                game.perSecAmountPerUpgrade *= 2;
-                game.perSecUpgradeAmountTillNextUpgrade = 0;
+        if(subject.game.money >= subject.game.perSecUpgradeCost) {
+            subject.game.moneyPerSec += subject.game.perSecAmountPerUpgrade;
+            subject.game.money -= subject.game.perSecUpgradeCost;
+            subject.game.perSecUpgradeAmountTillNextUpgrade += 1;
+            if(subject.game.perSecUpgradeAmountTillNextUpgrade >= 5) {
+                subject.game.perSecAmountPerUpgrade *= 2;
+                subject.game.perSecUpgradeAmountTillNextUpgrade = 0;
             }
-            game.perSecUpgradeCost *= 1.50;
-        }
-    }
-    if(upgrade == "offlineTime") {
-        if(game.money >= game.offlineTimeCost) {
-            game.maxOfflineTime += 0.5;
-            game.money -= game.offlineTimeCost;
-            game.offlineTimeCost *= 4;
-        }
-    }
-    if(upgrade == "prestigeBonus") {
-        if(game.prestigeCoins >= game.prestigeBonusUpgradeCost) {
-            game.bonusPerPresCoin += 1;
-            game.prestigeCoins -= game.prestigeBonusUpgradeCost;
-            game.prestigeBonusUpgradeCost = Math.round(game.prestigeBonusUpgradeCost * 3.50);
+            subject.game.perSecUpgradeCost *= 1.50;
         }
     }
     
@@ -209,9 +128,52 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-window.onbeforeunload = function (){
-    game.lastLoginDate = new Date();
-    save();
-};
 
 init();
+
+//AI Starts here
+var aiInterval = setInterval(() => {
+    for (let index = 0; index < subjects.length; index++) {
+        var subject = subjects[index];
+        if(subject.done) {
+            return;
+        }
+        if(subject.turns <= 0) {
+            console.log("Subject " + subject.number + " is out of turns")
+            subject.done = true;
+            return;
+        }
+        doAction(subject, getRandomInt(0,3))
+    }
+}, 1000);
+
+var subjects = [subject1 = {turns: 5, aiGame: game, number: 1, done: false},
+subject2 = {turns: 5, aiGame: game, number: 2, done: false},
+subject3 = {turns: 5, aiGame: game, number: 3, done: false},
+subject4 = {turns: 5, aiGame: game, number: 4, done: false},
+subject5 = {turns: 5, aiGame: game, number: 5, done: false},
+subject6 = {turns: 5, aiGame: game, number: 6, done: false}];
+
+function AiInit() {
+    console.log("AI init complete");
+}
+
+function doAction(subject,action) {
+    //0 = click, 1 = buyClickUpgrade, 2 = buy perSecUpgrade
+    switch (action) {
+        case 0:
+            onClick(subject);
+            subject.turns--;
+            console.log("Subject " + subject.number + " clicked the button");
+            break;
+        case 1:
+            buyUpgrade("click", subject);
+            subject.turns--;
+            break;
+        case 2:
+            buyUpgrade("perSec", subject);
+            subject.turns--;
+            break;
+    }
+}
+
