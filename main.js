@@ -27,10 +27,14 @@ var dataversion = 0.1;
 var defaultGame = game;
 
 var upgradeMenu = document.getElementById("upgradesMenu");
-var updateguiint = setInterval("updateGui()", 20);
-var upgradeint = setInterval("update()", 50);
+//var updateguiint = setInterval("updateGui()", 20);
+//var upgradeint = setInterval("update()", 50);
 var everySec = setInterval(() => {
-    subject.game.money += (getPrestigeBonus(subject.game.moneyPerSec) / 100);
+    for (let index = 0; index < subjects.length; index++) {
+        var subject = subjects[index];
+        
+        subject.game.money += (getPrestigeBonus(subject.game.moneyPerSec) / 100);
+    }
 }, 10);
 
 function init() {
