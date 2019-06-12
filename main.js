@@ -150,9 +150,12 @@ var aiInterval = setInterval(() => {
             console.log("Subject earned " + subject.aiGame.money)
             subject.done = true;
             continue;
+        } else if (subject.turns.length < subject.turns) {
+                console.log("Done with previous path");
         } else {
             doAction(subject, getRandomInt(0,3))
         }
+        
     }
 }, 1000);
 
