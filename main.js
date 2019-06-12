@@ -43,7 +43,7 @@ function reset(subject) {
 }
 
 function updateGui() {
-    document.getElementById("sub1cash").innerHTML="Subject 1 cash:"+subjects[0].aiGame.money;
+    document.getElementById("sub1cash").innerHTML="Subject 1 cash:"+subjects[0].aiGame.money + " " + subjects[0].path + " Current Path " + currentpath;
     document.getElementById("sub2cash").innerHTML="Subject 2 cash:"+subjects[1].aiGame.money;
     document.getElementById("sub3cash").innerHTML="Subject 3 cash:"+subjects[2].aiGame.money;
     document.getElementById("sub4cash").innerHTML="Subject 4 cash:"+subjects[3].aiGame.money;
@@ -130,6 +130,8 @@ init();
 
 //AI Starts here
 
+var currentpath=[];
+
 var stop = false;
 
 var aiInterval = setInterval(() => {
@@ -145,21 +147,30 @@ var aiInterval = setInterval(() => {
         if(subject.done) {
             continue;
         }
-        if(subject.turns <= 0) {
+        if(subject.turns == subject.maxTurns) {
             console.log("Subject " + subject.number + " is out of turns")
             console.log("Subject earned " + subject.aiGame.money)
             subject.done = true;
             continue;
-        } else if (subject.turns.length > subject.turns) {
-                console.log("Done with previous path");
+        } else if (subject.turns < subject.path.length) {
+            doAction(subject, subject.path[subject.turns - 1])
+            if(subject.number == 1) {
+                currentpath.push(subjects[0].path[subjects[0].turns]);
+            }
+            continue;
         } else {
-            doAction(subject, getRandomInt(0,3))
+            var randomint = getRandomInt(0,2);
+            doAction(subject, randomint);
+            subject.path.push(randomint);
+            if(subject.number == 1) {
+                currentpath.push(randomint);
+            }
         }
         
     }
 }, 1000);
 
-var subjects = [subject1 = {turns: 5,maxTurns: 5,path: [], aiGame: {
+var subjects = [subject1 = {turns: 0,maxTurns: 5,path: [], aiGame: {
     money: 0,
     moneyPerClick: 1,
     moneyPerSec: 0,
@@ -172,7 +183,7 @@ var subjects = [subject1 = {turns: 5,maxTurns: 5,path: [], aiGame: {
     perSecAmountPerUpgrade: 1,
     perSecUpgradeAmountTillNextUpgrade: 0,
 }, number: 1, done: false},
-subject2 = {turns: 5,maxTurns: 5,path: [], aiGame: {
+subject2 = {turns: 0,maxTurns: 5,path: [], aiGame: {
     money: 0,
     moneyPerClick: 1,
     moneyPerSec: 0,
@@ -185,7 +196,7 @@ subject2 = {turns: 5,maxTurns: 5,path: [], aiGame: {
     perSecAmountPerUpgrade: 1,
     perSecUpgradeAmountTillNextUpgrade: 0,
 }, number: 2, done: false},
-subject3 = {turns: 5,maxTurns: 5,path: [], aiGame: {
+subject3 = {turns: 0,maxTurns: 5,path: [], aiGame: {
     money: 0,
     moneyPerClick: 1,
     moneyPerSec: 0,
@@ -198,7 +209,7 @@ subject3 = {turns: 5,maxTurns: 5,path: [], aiGame: {
     perSecAmountPerUpgrade: 1,
     perSecUpgradeAmountTillNextUpgrade: 0,
 }, number: 3, done: false},
-subject4 = {turns: 5,maxTurns: 5,path: [], aiGame: {
+subject4 = {turns: 0,maxTurns: 5,path: [], aiGame: {
     money: 0,
     moneyPerClick: 1,
     moneyPerSec: 0,
@@ -211,7 +222,7 @@ subject4 = {turns: 5,maxTurns: 5,path: [], aiGame: {
     perSecAmountPerUpgrade: 1,
     perSecUpgradeAmountTillNextUpgrade: 0,
 }, number: 4, done: false},
-subject5 = {turns: 5,maxTurns: 5,path: [], aiGame: {
+subject5 = {turns: 0,maxTurns: 5,path: [], aiGame: {
     money: 0,
     moneyPerClick: 1,
     moneyPerSec: 0,
@@ -224,7 +235,7 @@ subject5 = {turns: 5,maxTurns: 5,path: [], aiGame: {
     perSecAmountPerUpgrade: 1,
     perSecUpgradeAmountTillNextUpgrade: 0,
 }, number: 5, done: false},
-subject6 = {turns: 5,maxTurns: 5,path: [], aiGame: {
+subject6 = {turns: 0,maxTurns: 5,path: [], aiGame: {
     money: 0,
     moneyPerClick: 1,
     moneyPerSec: 0,
@@ -264,10 +275,11 @@ function evolve() {
         var subject = subjects[index];
         console.log("Subject " +  subject.number  + " earned " + subject.aiGame.money)
         subject.maxTurns += 5;
-        subject.turns = subject.maxTurns;
+        subject.turns = 0;
         subject.done = false;
     }
     var stoptimeout = setTimeout(() => {
+        currentpath = [];
         for (let index = 0; index < subjects.length; index++) {
             var subject = subjects[index];
             subject.aiGame = {
@@ -290,28 +302,21 @@ function evolve() {
 
 function doAction(subject,action) {
     //0 = click, 1 = buyClickUpgrade, 2 = buy perSecUpgrade
-    if(subject.turns <= 0) {
-        subject.done = true;
-        return;
-    }
     switch (action) {
         case 0:
             onClick(subject);
-            subject.turns--;
+            subject.turns++;
             console.log("Subject " + subject.number + " clicked the button");
-            subject.path.push(action);
             break;
         case 1:
             buyUpgrade("click", subject);
-            subject.turns--;
+            subject.turns++;
             console.log("Subject " + subject.number + " bought click upgrade");
-            subject.path.push(action);
             break;
         case 2:
             buyUpgrade("perSec", subject);
-            subject.turns--;
+            subject.turns++;
             console.log("Subject " + subject.number + " bought perSec upgrade");
-            subject.path.push(action);
             break;
     }
 }
