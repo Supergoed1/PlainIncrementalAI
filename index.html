@@ -8,43 +8,12 @@
     <title>Incremental Game</title>
 </head>
 <body>
-    <div id="money" class="clicks">1</div>
-    <a class="clicker" id="clickButton" onclick="onClick()">+1</a>
-    <div class="upgradesButton" onclick="toggleVisibility(upgradeMenu)">Upgrades</div>
-    <div id="market">
-        Market
-        <div id="aprice">Apple Price: 10</div>
-        <div id="aamount">Apples: 0</div>
-        <button onclick="buyMarket('apple')">Buy 
-            <input type="number" id="applebuyamount" min="1" max="1000" style="position: relative; width: 40%">
-        </button>
-        <button onclick="sellMarket('apple')">Sell 
-                <input type="number" id="applesellamount" min="1" max="1000" style="position: relative; width: 40%">
-        </button>
-    </div>
-    <li id="upgradesMenu" style="visibility: hidden;">
-        <button class="upgradesButton" id="clickUpgrade" onclick="buyUpgrade('click')">+1/per click <br>
-            Cost: 10
-        </button>
-        <br>
-        <button class="upgradesButton" id="perSecUpgrade" onclick="buyUpgrade('perSec')">+1/sec <br>
-            Cost: 25
-        </button>
-        <br>
-        <button class="upgradesButton" id="offlineTimeUpgrade" onclick="buyUpgrade('offlineTime')">+0.5 hours offline time <br>
-            Cost: 1000
-        </button>
-        <br>
-        <button id="upgradesButton">hi</button>
-        <br>
-        <button id="upgradesButton">hi</button>
-    </li>
-    <li id="menu" style="visibility: hidden;">
-        <button class="menuButton" onclick="reset()">Reset</button>
-    </li>
-    <div id="presCoins">Prestige Coins: 0</div>
-    <div id="presBonus">Prestige Bonus: 0%</div>
-    <a class="upgradesButton" id="presButton" onclick="prestige()">Prestige</a>
+    <div id="sub1cash">Subject 1 cash: 0</div>
+    <div id="sub2cash">Subject 2 cash: 0</div>
+    <div id="sub3cash">Subject 3 cash: 0</div>
+    <div id="sub4cash">Subject 4 cash: 0</div>
+    <div id="sub5cash">Subject 5 cash: 0</div>
+    <div id="sub6cash">Subject 6 cash: 0</div>
     <script src="main.js"></script>
 </body>
 </html>
